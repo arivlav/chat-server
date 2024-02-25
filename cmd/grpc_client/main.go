@@ -46,12 +46,12 @@ func main() {
 	if messageErr != nil {
 		log.Fatalf("failed to send message: %v", messageErr)
 	}
-	log.Printf(color.RedString("Message is send\n"))
+	log.Print(color.RedString("Message is send\n"))
 
 	//delete...
 	_, deleteErr := c.Delete(ctx, &chat.DeleteRequest{Id: gofakeit.Uint64()})
 	if deleteErr != nil {
 		log.Fatalf("failed to delete chat by id: %v", deleteErr)
 	}
-	log.Printf(color.RedString("Chat is deleted\n"))
+	log.Print(color.RedString("Chat is deleted\n"))
 }
