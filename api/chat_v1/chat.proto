@@ -19,7 +19,7 @@ message CreateRequest {
 }
 
 message CreateResponse {
-  int64 id = 1;
+  uint64 id = 1;
 }
 
 message SendMessageRequest {
@@ -29,7 +29,7 @@ message SendMessageRequest {
 }
 
 message DeleteRequest {
-  int64 id = 1;
+  uint64 id = 1;
 }
 
 
