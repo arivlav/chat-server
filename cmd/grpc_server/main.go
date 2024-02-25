@@ -2,19 +2,16 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
 	"fmt"
 	"log"
-	"math/big"
 	"net"
 
-	desc "github.com/arivlav/chat-server/pkg/chat_v1"
 	"github.com/brianvoe/gofakeit"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"google.golang.org/protobuf/types/known/timestamppb"
+
+	chat "github.com/arivlav/chat-server/pkg/chat_v1"
 )
 
 const (
@@ -22,61 +19,33 @@ const (
 )
 
 type server struct {
-	desc.UnimplementedUserV1Server
+	chat.UnimplementedChatV1Server
 }
 
 // Create ...
-func (s *server) Create(_ context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
+func (s *server) Create(_ context.Context, req *chat.CreateRequest) (*chat.CreateResponse, error) {
 	id := gofakeit.Uint64()
-	log.Printf("New user got an ID: %d", id)
-	log.Printf("UserInfo: %+v", req.GetUser())
+	log.Printf("New chat (%d) is created: ", id)
+	log.Printf("Users: %+v", req.GetUsernames())
 
-	return &desc.CreateResponse{
+	return &chat.CreateResponse{
 		Id: id,
 	}, nil
 }
 
-// Get ...
-func (s *server) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
-	log.Printf("User id: %d", req.GetId())
-
-	randRole, _ := rand.Int(rand.Reader, big.NewInt(3))
-	newRole := desc.Role(randRole.Uint64())
-
-	return &desc.GetResponse{
-		User: &desc.User{
-			Id: req.GetId(),
-			User: &desc.UserInfo{
-				Name:  gofakeit.Name(),
-				Email: gofakeit.Email(),
-				Role:  newRole,
-			},
-			CreatedAt: timestamppb.New(gofakeit.Date()),
-			UpdatedAt: timestamppb.New(gofakeit.Date()),
-		},
-	}, nil
-}
-
-func printNotEmptyValue(key string, value *wrappers.StringValue) {
-	if value != nil {
-		log.Printf("New %s is %s", key, value)
-	}
-}
-
-// Update ...
-func (s *server) Update(_ context.Context, req *desc.UpdateRequest) (*empty.Empty, error) {
-	log.Printf("User %d is updated", req.GetId())
-	printNotEmptyValue("name", req.GetName())
-	printNotEmptyValue("mail", req.GetEmail())
-	log.Printf("New role is %v", req.GetRole())
+// Delete ...
+func (s *server) Delete(_ context.Context, req *chat.DeleteRequest) (*empty.Empty, error) {
+	log.Printf("Chat %d is deleted", req.GetId())
 
 	emptyResponse := empty.Empty{}
 	return &emptyResponse, nil
 }
 
-// Delete ...
-func (s *server) Delete(_ context.Context, req *desc.DeleteRequest) (*empty.Empty, error) {
-	log.Printf("User %d is deleted", req.GetId())
+// SendMessage ...
+func (s *server) SendMessage(_ context.Context, req *chat.SendMessageRequest) (*empty.Empty, error) {
+	log.Printf("Send message:")
+	log.Printf("from: %v", req.GetFrom())
+	log.Printf("text: %v", req.GetText())
 
 	emptyResponse := empty.Empty{}
 	return &emptyResponse, nil
@@ -90,7 +59,7 @@ func main() {
 
 	s := grpc.NewServer()
 	reflection.Register(s)
-	desc.RegisterUserV1Server(s, &server{})
+	chat.RegisterChatV1Server(s, &server{})
 
 	log.Printf("server listening at %v", lis.Addr())
 
