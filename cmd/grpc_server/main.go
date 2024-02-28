@@ -37,8 +37,7 @@ func (s *server) Create(_ context.Context, req *chat.CreateRequest) (*chat.Creat
 func (s *server) Delete(_ context.Context, req *chat.DeleteRequest) (*empty.Empty, error) {
 	log.Printf("Chat %d is deleted", req.GetId())
 
-	emptyResponse := empty.Empty{}
-	return &emptyResponse, nil
+	return &empty.Empty{}, nil
 }
 
 // SendMessage ...
@@ -47,8 +46,7 @@ func (s *server) SendMessage(_ context.Context, req *chat.SendMessageRequest) (*
 	log.Printf("from: %v", req.GetFrom())
 	log.Printf("text: %v", req.GetText())
 
-	emptyResponse := empty.Empty{}
-	return &emptyResponse, nil
+	return &empty.Empty{}, nil
 }
 
 func main() {
