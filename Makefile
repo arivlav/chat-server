@@ -14,7 +14,6 @@ get-deps:
 	go get -u google.golang.org/protobuf/cmd/protoc-gen-go
 	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
-
 generate:
 	make generate-chat-api
 
@@ -26,3 +25,9 @@ generate-chat-api:
 	--go-grpc_out=pkg/chat_v1 --go-grpc_opt=paths=source_relative \
 	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
 	api/chat_v1/chat.proto
+
+build:
+	GOOS=linux GOARCH=amd64 go build -o service_chat cmd/grpc_server/main.go
+
+copy-to-server:
+	scp service_chat root@91.236.199.95:
